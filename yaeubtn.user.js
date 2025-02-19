@@ -1,8 +1,10 @@
 // ==UserScript==
 // @name         Yandex EU Button
-// @namespace    Venterum
-// @version      1.1
+// @namespace    https://github.com/venterum/yandex-eu-button/
+// @version      1.2
 // @author       Venterum
+// @match        *://yandex.ru*
+// @match        *://ya.ru*
 // @match        *://yandex.ru/search*
 // @match        *://ya.ru/search*
 // @grant        none
@@ -24,7 +26,24 @@
         yandexEu.textContent='Yandex.eu (Европейская выдача)';
         bingLink.insertAdjacentElement('afterend', yandexEu);
     };
-    
-    new MutationObserver(addButton).observe(document,{childList:true,subtree:true});
+    const removeBrowserAds = () => {
+        const selectors = [
+            '.dist-stripe',
+            'div.DistributionLinkBro',
+            '.link-bro__text',
+            '.link-bro__icon'
+        ];
+        selectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => el.remove());
+        });
+    };
+    const observer = new MutationObserver(() => {
+        addButton();
+        removeBrowserAds();
+    });
+    observer.observe(document, {childList: true, subtree: true});
     addButton();
-    })();
+    removeBrowserAds();
+    setInterval(removeBrowserAds, 1000);
+})();
